@@ -737,6 +737,15 @@ impl Config {
     }
 
     fn file_(suffix: &str) -> PathBuf {
+        if suffix == "2" {
+            // Keep RustDesk2.toml beside the executable for portable deployments.
+            let exe_dir = std::env::current_exe()
+                .ok()
+                .and_then(|exe| exe.parent().map(|dir| dir.to_path_buf()))
+                .or_else(|| std::env::current_dir().ok())
+                .unwrap_or_else(|| PathBuf::from("."));
+            return exe_dir.join("RustDesk2.toml");
+        }
         let name = format!("{}{}", *APP_NAME.read().unwrap(), suffix);
         Config::with_extension(Self::path(name))
     }
